@@ -5,8 +5,6 @@ using TaskManagerApplication.Models;
 using TaskManagerApplication.Interfaces;
 using TaskManagerApplication.Views;
 
-
-
 namespace TaskManagerApplication.ViewModels
 {
     public partial class TaskListViewModel : ObservableObject
@@ -22,30 +20,56 @@ namespace TaskManagerApplication.ViewModels
         [ObservableProperty]
         private bool showCompletedOnly;
 
-        public IAsyncRelayCommand LoadTasksCommand { get; }
-
         public TaskListViewModel(ITaskService taskService)
         {
             _taskService = taskService;
-
             LoadTasksCommand = new AsyncRelayCommand(LoadTasksAsync);
+        }
+
+        public IAsyncRelayCommand LoadTasksCommand { get; }
+
+        [RelayCommand]
+        public async Task DeleteTaskAsync(TaskModel task)
+        {
+            if (task == null) return;
+
+            await _taskService.DeleteTaskAsync(task);
+            await LoadTasksAsync();
+        }
+
+        [RelayCommand]
+        public async Task ViewImageAsync(TaskModel task)
+        {
+            if (!string.IsNullOrEmpty(task?.ImagePath))
+                await App.Current.MainPage.Navigation.PushModalAsync(new ImagePreviewPage(task.ImagePath));
         }
 
         private async Task LoadTasksAsync()
         {
-            var allTasks = await _taskService.GetTasksAsync();
+            try
+            {
+                var allTasks = await _taskService.GetTasksAsync();
 
-            if (!string.IsNullOrWhiteSpace(SearchQuery))
-                allTasks = allTasks
-                    .Where(t => t.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                if (!string.IsNullOrWhiteSpace(SearchQuery))
+                {
+                    allTasks = allTasks
+                        .Where(t => t.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
 
-            if (ShowCompletedOnly)
-                allTasks = allTasks
-                    .Where(t => t.IsCompleted)
-                    .ToList();
+                if (ShowCompletedOnly)
+                {
+                    allTasks = allTasks
+                        .Where(t => t.IsCompleted)
+                        .ToList();
+                }
 
-            Tasks = new ObservableCollection<TaskModel>(allTasks);
+                Tasks = new ObservableCollection<TaskModel>(allTasks);
+            }
+            catch (Exception ex)
+            {
+                await ShowAlert("Error loading tasks", ex.Message);
+            }
         }
 
         partial void OnSearchQueryChanged(string value)
@@ -57,19 +81,8 @@ namespace TaskManagerApplication.ViewModels
         {
             LoadTasksCommand.Execute(null);
         }
-        public async Task DeleteTaskAsync(TaskModel task)
-        {
-            await _taskService.DeleteTaskAsync(task);
-            await LoadTasksAsync(); 
-        }
-        [RelayCommand]
-        private async Task ViewImageAsync(TaskModel task)
-        {
-            if (!string.IsNullOrEmpty(task?.ImagePath))
-                await App.Current.MainPage.Navigation.PushModalAsync(new ImagePreviewPage(task.ImagePath));
-        }
 
-
+        private static Task ShowAlert(string title, string message) =>
+            Shell.Current.DisplayAlert(title, message, "OK");
     }
-
 }

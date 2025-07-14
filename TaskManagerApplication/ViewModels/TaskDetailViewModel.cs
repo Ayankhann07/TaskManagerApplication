@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.VisualBasic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskManagerApplication.Interfaces;
 using TaskManagerApplication.Models;
+using Microsoft.Maui.Storage;
 
 namespace TaskManagerApplication.ViewModels
 {
@@ -12,47 +13,22 @@ namespace TaskManagerApplication.ViewModels
     {
         private readonly ITaskService _taskService;
 
-        [ObservableProperty] private int id;
-        [ObservableProperty] private string title;
-        [ObservableProperty] private string description;
-        [ObservableProperty] private DateTime dueDate = DateTime.Today;
-        [ObservableProperty] private string priority;
-        [ObservableProperty] private bool isCompleted;
-        [ObservableProperty] private string imagePath;
-
-
         public TaskDetailViewModel(ITaskService taskService)
         {
             _taskService = taskService;
         }
 
+        [ObservableProperty] private int id;
+        [ObservableProperty] private string title;
+        [ObservableProperty] private string description;
+        [ObservableProperty] private DateTime dueDate = DateTime.Today;
+        [ObservableProperty] private string priority = "Low";
+        [ObservableProperty] private bool isCompleted;
+        [ObservableProperty] private string imagePath;
+
+        public List<string> Priorities { get; } = new() { "Low", "Medium", "High" };
+
         [RelayCommand]
-        //public async Task SaveTask()
-        //{
-        //    if (string.IsNullOrWhiteSpace(Title))
-        //    {
-        //        await App.Current.MainPage.DisplayAlert("Error", "Title is required", "OK");
-        //        return;
-        //    }
-
-        //    var task = new TaskModel
-        //    {
-        //        Id = Id,
-        //        Title = Title,
-        //        Description = Description,
-        //        DueDate = DueDate,
-        //        Priority = Priority,
-        //        IsCompleted = IsCompleted
-        //    };
-
-        //    if (Id == 0)
-        //        await _taskService.AddTaskAsync(task);
-        //    else
-        //        await _taskService.UpdateTaskAsync(task);
-
-        //    await Shell.Current.GoToAsync(".."); // Go back
-        //}
-
         public void LoadTask(TaskModel task)
         {
             if (task == null) return;
@@ -63,16 +39,15 @@ namespace TaskManagerApplication.ViewModels
             DueDate = task.DueDate;
             Priority = task.Priority;
             IsCompleted = task.IsCompleted;
-            ImagePath = ImagePath;
+            ImagePath = task.ImagePath;
         }
-        public List<string> Priorities { get; } = new() { "Low", "Medium", "High" };
 
         [RelayCommand]
-        private async Task SaveTask()
+        private async Task SaveTaskAsync()
         {
             if (string.IsNullOrWhiteSpace(Title))
             {
-                await App.Current.MainPage.DisplayAlert("Error", "Title is required", "OK");
+                await ShowAlert("Error", "Title is required");
                 return;
             }
 
@@ -94,36 +69,9 @@ namespace TaskManagerApplication.ViewModels
 
             await Shell.Current.GoToAsync("..");
         }
-        //[RelayCommand]
-        //public async Task PickImageAsync()
-        //{
-        //    try
-        //    {
-        //        var result = await MediaPicker.PickPhotoAsync();
-        //        if (result != null)
-        //        {
-        //            var path = result.FullPath;
-        //            ImagePath = path;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await App.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
-        //    }
-        //    var task = new TaskModel
-        //    {
-        //        Id = Id,
-        //        Title = Title,
-        //        Description = Description,
-        //        DueDate = DueDate,
-        //        Priority = Priority,
-        //        IsCompleted = IsCompleted,
-        //        ImagePath = ImagePath // 👈 this
-        //    };
 
-        //}
         [RelayCommand]
-        public async Task PickImage()
+        public async Task PickImageAsync()
         {
             try
             {
@@ -134,27 +82,23 @@ namespace TaskManagerApplication.ViewModels
                     "📸 Take Photo",
                     "🖼️ Pick from Gallery");
 
-                FileResult result = null;
-
-                if (action == "📸 Take Photo")
+                FileResult result = action switch
                 {
-                    result = await MediaPicker.CapturePhotoAsync();
-                }
-                else if (action == "🖼️ Pick from Gallery")
-                {
-                    result = await MediaPicker.PickPhotoAsync();
-                }
+                    "📸 Take Photo" => await MediaPicker.CapturePhotoAsync(),
+                    "🖼️ Pick from Gallery" => await MediaPicker.PickPhotoAsync(),
+                    _ => null
+                };
 
                 if (result != null)
-                {
                     ImagePath = result.FullPath;
-                }
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+                await ShowAlert("Error", ex.Message);
             }
         }
 
+        private static Task ShowAlert(string title, string message) =>
+            Shell.Current.DisplayAlert(title, message, "OK");
     }
 }
