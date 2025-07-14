@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="TaskManagerApplication.Views.AddEditTaskPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:TaskManagerApplication.Converters"
+    Title="Add/Edit Task"
+    BackgroundColor="{AppThemeBinding Light='#F5F5F5', Dark='#121212'}">
+
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:NullToBoolConverter x:Key="NullToBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <ScrollView>
+            <VerticalStackLayout Padding="24" Spacing="20">
+
+               
+                <Frame Padding="10" CornerRadius="10" HasShadow="False" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+                    <Entry
+                        Placeholder="Title"
+                        Text="{Binding Title}"
+                        BackgroundColor="Transparent"
+                        FontSize="16"
+                        TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                </Frame>
+
+                
+                <Frame Padding="10" CornerRadius="10" HasShadow="False" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+                    <Editor
+                        Placeholder="Description"
+                        Text="{Binding Description}"
+                        AutoSize="TextChanges"
+                        BackgroundColor="Transparent"
+                        FontSize="14"
+                        TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                </Frame>
+
+                
+                <Frame Padding="10" CornerRadius="10" HasShadow="False" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+                    <DatePicker
+                        Date="{Binding DueDate}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                </Frame>
+
+               
+                <Frame Padding="10" CornerRadius="10" HasShadow="False" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+                    <Picker
+                        Title="Priority"
+                        SelectedItem="{Binding Priority}"
+                        TitleColor="#888"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light='Black', Dark='White'}">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Low</x:String>
+                                <x:String>Medium</x:String>
+                                <x:String>High</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </Frame>
+
+               
+                <Frame Padding="10" CornerRadius="10" HasShadow="False" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                        <Switch IsToggled="{Binding IsCompleted}" />
+
+                        <Label Text="Task Completed"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light='Black', Dark='White'}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label"
+                                             Binding="{Binding IsCompleted}"
+                                             Value="True">
+                                    <Setter Property="TextColor" Value="Green" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </Frame>
+
+               
+                <Image
+                    Source="{Binding ImagePath}"
+                    HeightRequest="240"
+                    Aspect="AspectFit"
+                    IsVisible="{Binding ImagePath, Converter={StaticResource NullToBoolConverter}}" />
+
+                <Button
+                    Text="📷 Add Image"
+                    FontSize="16"
+                    CornerRadius="10"
+                    Padding="10"
+                    BackgroundColor="#1976D2"
+                    TextColor="White"
+                    Command="{Binding PickImageCommand}" />
+
+                
+                <Button
+                    Text="💾 Save Task"
+                    FontSize="16"
+                    CornerRadius="10"
+                    Padding="10"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
+                    Command="{Binding SaveTaskCommand}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="TaskManagerApplication.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+     xmlns:views="clr-namespace:TaskManagerApplication.Views"
+    xmlns:vm="clr-namespace:TaskManagerApplication.ViewModels"
+    xmlns:local="clr-namespace:TaskManagerApplication"
+    Shell.FlyoutBehavior="Disabled"
+    Title="TaskManagerApplication">
+
+    
+    
+    <ShellContent Title="Tasks" ContentTemplate="{DataTemplate views:TaskListPage}" />
+
+
+</Shell>

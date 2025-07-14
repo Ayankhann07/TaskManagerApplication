@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="TaskManagerApplication.Views.DeviceInfoPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Device Info"
+    BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+
+	<ScrollView>
+		<VerticalStackLayout Padding="24" Spacing="24">
+
+		
+			<Label
+                Text="📱 Device Information"
+                FontSize="24"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+
+			
+			<Frame Padding="16" CornerRadius="12" BackgroundColor="{AppThemeBinding Light='#F0F0F0', Dark='#2C2C2C'}" HasShadow="False">
+				<VerticalStackLayout Spacing="12">
+					<Label Text="Model:" FontAttributes="Bold" FontSize="16" TextColor="#888" />
+					<Label Text="{Binding Model}" FontSize="16" TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+
+					<Label Text="Manufacturer:" FontAttributes="Bold" FontSize="16" TextColor="#888" />
+					<Label Text="{Binding Manufacturer}" FontSize="16" TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+
+					<Label Text="Platform:" FontAttributes="Bold" FontSize="16" TextColor="#888" />
+					<Label Text="{Binding Platform}" FontSize="16" TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+
+					<Label Text="OS Version:" FontAttributes="Bold" FontSize="16" TextColor="#888" />
+					<Label Text="{Binding OSVersion}" FontSize="16" TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+
+					<Label Text="Idiom:" FontAttributes="Bold" FontSize="16" TextColor="#888" />
+					<Label Text="{Binding Idiom}" FontSize="16" TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+
+					<Label Text="Device Type:" FontAttributes="Bold" FontSize="16" TextColor="#888" />
+					<Label Text="{Binding DeviceType}" FontSize="16" TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+				</VerticalStackLayout>
+			</Frame>
+
+		</VerticalStackLayout>
+	</ScrollView>
+</ContentPage>

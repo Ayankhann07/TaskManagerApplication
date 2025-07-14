@@ -1,0 +1,157 @@
+﻿<ContentPage
+    x:Class="TaskManagerApplication.Views.TaskListPage"
+	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:viewmodels="clr-namespace:TaskManagerApplication.ViewModels"
+    Title="Task List"
+    BackgroundColor="{AppThemeBinding Light='#F5F5F5', Dark='#121212'}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+            Text="Device Info" 
+            IconImageSource="dot_menu.png" 
+            Order="Primary"
+            Clicked="OnDeviceInfoClicked"/>
+    </ContentPage.ToolbarItems>
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="18">
+               
+                <Frame 
+                    Padding="8" 
+                    CornerRadius="12" 
+                    HasShadow="False" 
+                    BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}">
+                    <Entry
+                        Placeholder="🔍 Search tasks..."
+                        Text="{Binding SearchQuery}"
+                        PlaceholderColor="#888"
+                        FontSize="14"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                </Frame>
+                
+                <Frame Padding="10,5" HasShadow="False" BackgroundColor="Transparent">
+                    <HorizontalStackLayout VerticalOptions="Center" Spacing="12">
+                        <Label
+                            Text="Show Completed Only"
+                            FontSize="14"
+                            VerticalOptions="Center"
+                            TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                        <Switch IsToggled="{Binding ShowCompletedOnly}" />
+                    </HorizontalStackLayout>
+                </Frame>
+                
+                <CollectionView ItemsSource="{Binding Tasks}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame 
+                                Margin="5,10" 
+                                Padding="14" 
+                                BackgroundColor="{AppThemeBinding Light='White', Dark='#1F1F1F'}"
+                                CornerRadius="14"
+                                HasShadow="True">
+                                <VerticalStackLayout Spacing="8">
+                                   
+                                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                        <Label 
+                                            Text="{Binding Title}" 
+                                            FontSize="18" 
+                                            FontAttributes="Bold"
+                                            TextColor="{AppThemeBinding Light='Black', Dark='White'}"
+                                            Grid.Column="0" />
+                                        <ImageButton
+                                            Source="{AppThemeBinding Light='chevron.png', Dark='down_chevron.png'}"
+                                            BackgroundColor="Transparent"
+                                            HeightRequest="24"
+                                            WidthRequest="24"
+                                            Clicked="OnToggleExpandClicked"
+                                            CommandParameter="{Binding}"
+                                            Grid.Column="1" />
+                                    </Grid>
+                                    
+                                    <StackLayout IsVisible="{Binding IsExpanded}" Spacing="10">
+                                        <Grid ColumnDefinitions="*,Auto" RowSpacing="8">
+                                            
+                                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                                <Label 
+                                                Text="{Binding Description}" 
+                                                FontSize="15"
+                                                TextColor="{AppThemeBinding Light='Black', Dark='White'}" />        
+                                                    <Label 
+                                                    Text="{Binding DueDate, StringFormat='📅 Due: {0:dd MMM yyyy}'}" 
+                                                    FontSize="14"
+                                                    TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                                                    <Label 
+                                                    Text="{Binding Priority, StringFormat='🔥 Priority: {0}'}" 
+                                                    FontSize="14"
+                                                    TextColor="DarkOrange" />
+                                                <Label 
+                                                    Text="{Binding IsCompleted, StringFormat='✅ Completed: {0}'}" 
+                                                    FontSize="14"
+                                                    TextColor="Green" />    
+                                                
+                                                
+                                                <HorizontalStackLayout 
+                                                    IsVisible="{Binding ImagePath, Converter={StaticResource NullToBoolConverter}}" 
+                                                    Spacing="6">    
+                                                    <Label 
+                                                        Text="🖼️ Image:"
+                                                        FontSize="14"
+                                                        TextColor="{AppThemeBinding Light='Black', Dark='White'}" />        
+                                                    <Label 
+                                                        Text="View"
+                                                        FontSize="14"
+                                                        TextColor="DodgerBlue"
+                                                        TextDecorations="Underline"
+                                                        FontAttributes="Bold">
+                                                        <Label.GestureRecognizers>
+                                                            <TapGestureRecognizer
+                                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=ViewImageCommand}"
+                                                                CommandParameter="{Binding}" />
+                                                        </Label.GestureRecognizers>
+                                                    </Label>
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+                                            
+                                            <VerticalStackLayout Grid.Column="1" Spacing="16" VerticalOptions="Start">
+                                                <ImageButton 
+                                                    Source="{AppThemeBinding Light='editnew.png', Dark='editnew.png'}"
+                                                    HeightRequest="50"
+                                                    WidthRequest="26"
+                                                    BackgroundColor="Transparent"
+                                                    Clicked="OnEditTaskClicked"
+                                                    CommandParameter="{Binding}" />
+                                                <ImageButton 
+                                                    Source="{AppThemeBinding Light='binnew.png', Dark='binnew.png'}"
+                                                    HeightRequest="26"
+                                                    WidthRequest="26"
+                                                    BackgroundColor="Transparent"
+                                                    Clicked="OnDeleteTaskClicked"
+                                                    CommandParameter="{Binding}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </StackLayout>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <Grid Padding="16" VerticalOptions="End" HorizontalOptions="End">
+            <Button
+                Text="＋"
+                WidthRequest="60"
+                HeightRequest="60"
+                FontSize="28"
+                CornerRadius="30"
+                BackgroundColor="#512BD4"
+                TextColor="{AppThemeBinding Light='White', Dark='White'}"
+                Clicked="OnAddTaskClicked"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Padding="0" />
+        </Grid>
+    </Grid>
+</ContentPage>
