@@ -62,12 +62,12 @@ namespace TaskManagerApplication.ViewModels
                 ImagePath = ImagePath
             };
 
-            if (Id == 0)
-                await _taskService.AddTaskAsync(task);
-            else
-                await _taskService.UpdateTaskAsync(task);
+            await (Id == 0
+                 ? _taskService.AddTaskAsync(task)
+                 : _taskService.UpdateTaskAsync(task));
 
             await Shell.Current.GoToAsync("..");
+
         }
 
         [RelayCommand]
